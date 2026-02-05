@@ -1,55 +1,38 @@
-# Image de base légère
-ARG BASE_IMAGE=nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04
-FROM ${BASE_IMAGE}
+# Image de base avec PyTorch déjà installé
+FROM runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel
+
+WORKDIR /workspace
 
 # Variables d'environnement
 ENV DEBIAN_FRONTEND=noninteractive \
-    PIP_PREFER_BINARY=1 \
     PYTHONUNBUFFERED=1
 
-# Installation des dépendances système
-RUN echo "========== STEP 1: Installing system dependencies ==========" && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    python3.12 python3.12-venv git wget libgl1 libglib2.0-0 ffmpeg && \
-    ln -sf /usr/bin/python3.12 /usr/bin/python && \
-    rm -rf /var/lib/apt/lists/* && \
-    echo "========== System dependencies installed =========="
+# Installation minimale des dépendances système
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git wget ffmpeg libgl1 libglib2.0-0 && \
+    rm -rf /var/lib/apt/lists/*
 
-# Installation de 'uv' pour un build ultra-rapide
-RUN echo "========== STEP 2: Installing uv ==========" && \
-    wget -qO- https://astral.sh/uv/install.sh | sh && \
-    ln -s /root/.local/bin/uv /usr/local/bin/uv && \
-    uv venv /opt/venv && \
-    echo "========== uv installed =========="
-
-ENV PATH="/opt/venv/bin:${PATH}"
-
-# Installation de ComfyUI via comfy-cli
-RUN echo "========== STEP 3: Installing ComfyUI (this may take a while) ==========" && \
-    uv pip install comfy-cli pip setuptools wheel && \
-    echo "========== comfy-cli installed, now installing ComfyUI ==========" && \
-    comfy --skip-prompt install --workspace /comfyui --nvidia && \
-    echo "========== ComfyUI installed =========="
+# Cloner ComfyUI directement (plus rapide que comfy-cli)
+RUN echo "Cloning ComfyUI..." && \
+    git clone https://github.com/comfyanonymous/ComfyUI.git /comfyui
 
 WORKDIR /comfyui
 
-# Installation des dépendances RunPod
-RUN echo "========== STEP 4: Installing RunPod dependencies ==========" && \
-    uv pip install runpod requests websocket-client && \
-    echo "========== RunPod dependencies installed =========="
+# Installer les requirements de ComfyUI
+RUN echo "Installing ComfyUI requirements..." && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copie de tes scripts locaux
-RUN echo "========== STEP 5: Copying configuration files =========="
-ADD src/extra_model_paths.yaml ./
-ADD src/start.sh src/handler.py ./
-RUN chmod +x ./start.sh && \
-    echo "========== Configuration files copied =========="
+# Installer RunPod SDK
+RUN echo "Installing RunPod..." && \
+    pip install --no-cache-dir runpod requests websocket-client
 
-# Scripts utilitaires
-RUN echo "========== STEP 6: Copying utility scripts =========="
-COPY scripts/comfy-node-install.sh /usr/local/bin/comfy-node-install
+# Copier vos fichiers de configuration
+COPY src/extra_model_paths.yaml ./
+COPY src/start.sh src/handler.py ./
+RUN chmod +x ./start.sh
+
+# Scripts utilitaires (si vous en avez besoin)
 COPY scripts/comfy-manager-set-mode.sh /usr/local/bin/comfy-manager-set-mode
-RUN chmod +x /usr/local/bin/comfy-node-install /usr/local/bin/comfy-manager-set-mode && \
-    echo "========== BUILD COMPLETE =========="
+RUN chmod +x /usr/local/bin/comfy-manager-set-mode || true
 
 CMD ["./start.sh"]
