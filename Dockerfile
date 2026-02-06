@@ -7,12 +7,15 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends git wget ffmpeg libgl1 libglib2.0-0 && \
     rm -rf /var/lib/apt/lists/*
 
+# UPGRADE PyTorch vers une version compatible
+RUN pip install --no-cache-dir --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
 # Cloner ComfyUI
 RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /comfyui
 
 WORKDIR /comfyui
 
-# CRITIQUE : Modifier requirements.txt pour forcer numpy<2
+# Modifier requirements.txt pour forcer numpy<2
 RUN sed -i 's/numpy.*/numpy<2/' requirements.txt || echo "numpy<2" >> requirements.txt
 
 # Installer les requirements modifiés + RunPod
