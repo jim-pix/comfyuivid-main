@@ -12,8 +12,9 @@ RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /comfyui
 
 WORKDIR /comfyui
 
-# Installer les requirements de ComfyUI + RunPod
-RUN pip install --no-cache-dir -r requirements.txt && \
+# CRITIQUE : Downgrade NumPy AVANT d'installer les requirements
+RUN pip install --no-cache-dir 'numpy<2' && \
+    pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir runpod websocket-client requests
 
 # Créer extra_model_paths.yaml
@@ -26,4 +27,3 @@ RUN printf '#!/bin/bash\nset -e\necho "=== ComfyUI Serverless Worker ==="\necho 
 RUN printf 'import runpod\nimport requests\nimport json\nimport time\n\ndef handler(job):\n    job_input = job.get("input", {})\n    workflow = job_input.get("workflow")\n    \n    if not workflow:\n        return {"error": "No workflow provided"}\n    \n    try:\n        response = requests.post(\n            "http://localhost:8188/prompt",\n            json={"prompt": workflow}\n        )\n        \n        if response.status_code != 200:\n            return {"error": f"ComfyUI error: {response.text}"}\n        \n        result = response.json()\n        return {"status": "success", "prompt_id": result.get("prompt_id")}\n    except Exception as e:\n        return {"error": str(e)}\n\nif __name__ == "__main__":\n    print("Starting RunPod handler...")\n    runpod.serverless.start({"handler": handler})\n' > /handler.py
 
 CMD ["./start.sh"]
-
