@@ -12,9 +12,11 @@ RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /comfyui
 
 WORKDIR /comfyui
 
-# CRITIQUE : Downgrade NumPy AVANT d'installer les requirements
-RUN pip install --no-cache-dir 'numpy<2' && \
-    pip install --no-cache-dir -r requirements.txt && \
+# CRITIQUE : Modifier requirements.txt pour forcer numpy<2
+RUN sed -i 's/numpy.*/numpy<2/' requirements.txt || echo "numpy<2" >> requirements.txt
+
+# Installer les requirements modifiés + RunPod
+RUN pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir runpod websocket-client requests
 
 # Créer extra_model_paths.yaml
