@@ -1,0 +1,1473 @@
+{
+  "7": {
+    "inputs": {
+      "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走, censored, mosaic censoring, bar censor, pixelated, glowing, bloom, blurry, out of focus, low detail, bad anatomy, ugly, overexposed, underexposed, distorted face, extra limbs, cartoonish, 3d render artifacts, duplicate people, unnatural lighting, bad composition, missing shadows, low resolution, poorly textured, glitch, noise, grain, static, motionless, still frame, overall grayish, worst quality, low quality, JPEG compression artifacts, subtitles, stylized, artwork, painting, illustration, cluttered background, many people in background, three legs, walking backward, unnatural skin tone, discolored eyelid, red eyelids, red upper eyelids, no red eyeshadow, closed eyes, no wide-open innocent eyes, poorly drawn hands, extra fingers, fused fingers, poorly drawn face, deformed, disfigured, malformed limbs, thighs, fog, mist, voluminous eyelashes, blush, nsfw",
+      "clip": [
+        "38",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Negative Prompt)"
+    }
+  },
+  "8": {
+    "inputs": {
+      "samples": [
+        "58",
+        0
+      ],
+      "vae": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "37": {
+    "inputs": {
+      "unet_name": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Charger Modèle Diffusion"
+    }
+  },
+  "38": {
+    "inputs": {
+      "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Charger CLIP"
+    }
+  },
+  "39": {
+    "inputs": {
+      "vae_name": "wan_2.1_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Charger VAE"
+    }
+  },
+  "54": {
+    "inputs": {
+      "shift": 8.000000000000002,
+      "model": [
+        "128",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingSD3",
+    "_meta": {
+      "title": "ModèleÉchantillonnageSD3"
+    }
+  },
+  "55": {
+    "inputs": {
+      "shift": 8.000000000000002,
+      "model": [
+        "129",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingSD3",
+    "_meta": {
+      "title": "ModèleÉchantillonnageSD3"
+    }
+  },
+  "56": {
+    "inputs": {
+      "unet_name": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Charger Modèle Diffusion"
+    }
+  },
+  "57": {
+    "inputs": {
+      "add_noise": "enable",
+      "noise_seed": 12,
+      "steps": 4,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "start_at_step": 0,
+      "end_at_step": 2,
+      "return_with_leftover_noise": "enable",
+      "model": [
+        "54",
+        0
+      ],
+      "positive": [
+        "132",
+        0
+      ],
+      "negative": [
+        "132",
+        1
+      ],
+      "latent_image": [
+        "132",
+        4
+      ]
+    },
+    "class_type": "KSamplerAdvanced",
+    "_meta": {
+      "title": "KSampler (Advanced) - HIGH"
+    }
+  },
+  "58": {
+    "inputs": {
+      "add_noise": "disable",
+      "noise_seed": 12,
+      "steps": 4,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "start_at_step": 2,
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable",
+      "model": [
+        "55",
+        0
+      ],
+      "positive": [
+        "132",
+        2
+      ],
+      "negative": [
+        "132",
+        3
+      ],
+      "latent_image": [
+        "57",
+        0
+      ]
+    },
+    "class_type": "KSamplerAdvanced",
+    "_meta": {
+      "title": "KSampler (Advanced) - LOW"
+    }
+  },
+  "63": {
+    "inputs": {
+      "frame_rate": 16,
+      "loop_count": 0,
+      "filename_prefix": "Video/i2v_2026-02-04/121505_LOW",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_metadata": true,
+      "trim_to_audio": false,
+      "pingpong": false,
+      "save_output": false,
+      "images": [
+        "8",
+        0
+      ],
+      "vae": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Video Combine 🎥🅥🅗🅢"
+    }
+  },
+  "73": {
+    "inputs": {
+      "anything": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "easy cleanGpuUsed",
+    "_meta": {
+      "title": "Clean VRAM Used"
+    }
+  },
+  "74": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "scale_by": 2.0000000000000004,
+      "image": [
+        "73",
+        0
+      ]
+    },
+    "class_type": "ImageScaleBy",
+    "_meta": {
+      "title": "Agrandir l'image par"
+    }
+  },
+  "75": {
+    "inputs": {
+      "ckpt_name": "rife49.pth",
+      "clear_cache_after_n_frames": 10,
+      "multiplier": 2,
+      "fast_mode": false,
+      "ensemble": true,
+      "scale_factor": 1,
+      "frames": [
+        "76",
+        0
+      ]
+    },
+    "class_type": "RIFE VFI",
+    "_meta": {
+      "title": "Frame Interpolation (RIFE)"
+    }
+  },
+  "76": {
+    "inputs": {
+      "anything": [
+        "74",
+        0
+      ]
+    },
+    "class_type": "easy cleanGpuUsed",
+    "_meta": {
+      "title": "Clean VRAM Used"
+    }
+  },
+  "77": {
+    "inputs": {
+      "frame_rate": 32,
+      "loop_count": 0,
+      "filename_prefix": "Video/i2v_2026-02-04/121505",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_metadata": true,
+      "trim_to_audio": false,
+      "pingpong": false,
+      "save_output": true,
+      "images": [
+        "75",
+        0
+      ]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Video Combine 🎥🅥🅗🅢"
+    }
+  },
+  "78": {
+    "inputs": {
+      "from_direction": "end",
+      "count": 1,
+      "image": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "Pick From Batch (mtb)",
+    "_meta": {
+      "title": "Pick From Batch (mtb)"
+    }
+  },
+  "79": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "scale_by": 2.0000000000000004,
+      "image": [
+        "78",
+        0
+      ]
+    },
+    "class_type": "ImageScaleBy",
+    "_meta": {
+      "title": "Agrandir l'image par"
+    }
+  },
+  "81": {
+    "inputs": {
+      "filename_prefix": "Video/i2v_2026-02-04/121505LASTFRAME",
+      "images": [
+        "79",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Enregistrer Image"
+    }
+  },
+  "127": {
+    "inputs": {
+      "text": [
+        "385",
+        0
+      ],
+      "clip": [
+        "38",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive Prompt)"
+    }
+  },
+  "128": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": true,
+        "lora": "wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "strength": 1
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "37",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": {
+      "title": "Power Lora Loader (HIGH)"
+    }
+  },
+  "129": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": true,
+        "lora": "wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "strength": 1
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "56",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": {
+      "title": "Power Lora Loader (LOW)"
+    }
+  },
+  "132": {
+    "inputs": {
+      "width": [
+        "259",
+        1
+      ],
+      "height": [
+        "259",
+        2
+      ],
+      "length": 61,
+      "batch_size": 1,
+      "motion_amplitude": 1.3,
+      "color_protect": true,
+      "correct_strength": 0.05,
+      "positive": [
+        "127",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "vae": [
+        "39",
+        0
+      ],
+      "start_image": [
+        "259",
+        0
+      ]
+    },
+    "class_type": "PainterI2VAdvanced",
+    "_meta": {
+      "title": "PainterI2VAdvanced"
+    }
+  },
+  "133": {
+    "inputs": {
+      "image": "c8a4656eb899266cd29853f5cab87e23.jpg"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Charger Image"
+    }
+  },
+  "143": {
+    "inputs": {
+      "Text": "la camera orbit autour de la moutre, change le fond pour un etable en bois dans une salle de restaurant moderne"
+    },
+    "class_type": "DF_Text_Box",
+    "_meta": {
+      "title": "Prompt_CLient"
+    }
+  },
+  "144": {
+    "inputs": {
+      "Prepend": [
+        "345",
+        0
+      ],
+      "Append": [
+        "145",
+        0
+      ],
+      "Delimiter": ","
+    },
+    "class_type": "DF_String_Concatenate",
+    "_meta": {
+      "title": "String Concatenate"
+    }
+  },
+  "145": {
+    "inputs": {
+      "Prepend": [
+        "339",
+        0
+      ],
+      "Append": [
+        "143",
+        0
+      ],
+      "Delimiter": ","
+    },
+    "class_type": "DF_String_Concatenate",
+    "_meta": {
+      "title": "String Concatenate"
+    }
+  },
+  "146": {
+    "inputs": {
+      "Text": "AIzaSyCYoxQHNLyqwGXYSMbkBcjkWCxQxKOwbpc"
+    },
+    "class_type": "DF_Text",
+    "_meta": {
+      "title": "Do_NoT_SHOW_SECRET"
+    }
+  },
+  "147": {
+    "inputs": {
+      "prompt": [
+        "144",
+        0
+      ],
+      "gemini_model": "gemini-3-flash-preview",
+      "stream": false,
+      "structure_output": false,
+      "prompt_structure": "Custom",
+      "structure_format": "",
+      "output_format": "raw_text",
+      "api_key": "AIzaSyAeyRX4jdOW_x438VtH6iK4OCvQE9dDsqA"
+    },
+    "class_type": "GeminiAPI",
+    "_meta": {
+      "title": "Gemini API"
+    }
+  },
+  "149": {
+    "inputs": {
+      "Text": "IMPORTANT: Even if the user prompt is in French, your output must be exclusively in English. You must act as a translator and enhancer.\n\nRole: Expert cinematic prompt engineer for WanVideo and Image Generation. Context: You will receive a raw list of tags describing a person and their accessories.\n\nTask: Translate and transform the user's request into two distinct technical prompts separated ONLY by the word: STOP.\n\nDecision Logic: Lighting Sync: Analyze the tags. You MUST force the environment to match the subject's lighting (sunset if warm tones). The light source direction in the background must match the light direction on the subject. IF ANIMAL: Describe natural lifelike movements. IF PERSON: Add \"living\" details (eye blinking, subtle head tilt, slight smile). IF ARCHITECTURE: Force physical camera displacement (Dolly-in, Orbit, or Pan).\n\nSTRICT NEGATIVE CONSTRAINTS: In the first paragraph: NEVER mention any person, character, body part, or human presence. It must be a 100% empty environment. Focus on the luxury terrace, the materials (marble, wood, glass), and the environmental lighting.\n\nIn the second paragraph: Focus strictly on the subject and the camera movement.\n\nOUTPUT FORMAT (Mandatory): Write one paragraph describing ONLY the static environment. Then write the word STOP on a new line. Then write one paragraph starting directly with the camera movement and describing the character's subtle actions. DO NOT use brackets, DO NOT use bold stars, DO NOT use titles.\nOutput structure: [PROMPT1]STOP[PROMPT2]. No spaces, no new lines around STOP"
+    },
+    "class_type": "DF_Text_Box",
+    "_meta": {
+      "title": "Formatage Prompt Mode 2"
+    }
+  },
+  "151": {
+    "inputs": {
+      "images": [
+        "176",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Aperçu Image"
+    }
+  },
+  "152": {
+    "inputs": {
+      "width": 1920,
+      "height": 1088,
+      "images": [
+        "153",
+        0
+      ]
+    },
+    "class_type": "CenterCropImages",
+    "_meta": {
+      "title": "Crop 16:9"
+    }
+  },
+  "153": {
+    "inputs": {
+      "width": 1920,
+      "height": 1088,
+      "interpolation": "nearest",
+      "method": "fill / crop",
+      "condition": "always",
+      "multiple_of": 0,
+      "image": [
+        "133",
+        0
+      ]
+    },
+    "class_type": "ImageResize+",
+    "_meta": {
+      "title": "Mode 16:9"
+    }
+  },
+  "154": {
+    "inputs": {
+      "width": 1088,
+      "height": 1920,
+      "interpolation": "nearest",
+      "method": "fill / crop",
+      "condition": "always",
+      "multiple_of": 0,
+      "image": [
+        "133",
+        0
+      ]
+    },
+    "class_type": "ImageResize+",
+    "_meta": {
+      "title": "Mode 9:16"
+    }
+  },
+  "155": {
+    "inputs": {
+      "width": 1088,
+      "height": 1920,
+      "images": [
+        "154",
+        0
+      ]
+    },
+    "class_type": "CenterCropImages",
+    "_meta": {
+      "title": "Crop 9:16"
+    }
+  },
+  "158": {
+    "inputs": {
+      "index": 1,
+      "value0": [
+        "152",
+        0
+      ],
+      "value1": [
+        "155",
+        0
+      ]
+    },
+    "class_type": "easy anythingIndexSwitch",
+    "_meta": {
+      "title": "16:9 ---- 9:16   Interuptor"
+    }
+  },
+  "159": {
+    "inputs": {
+      "image": [
+        "158",
+        0
+      ]
+    },
+    "class_type": "GetImageSize",
+    "_meta": {
+      "title": "Obtenir la taille de l'image"
+    }
+  },
+  "160": {
+    "inputs": {
+      "expression": "(a * b) // 16 * 16",
+      "a": [
+        "159",
+        0
+      ],
+      "b": [
+        "162",
+        0
+      ]
+    },
+    "class_type": "MathExpression|pysssss",
+    "_meta": {
+      "title": "Expression WIdth"
+    }
+  },
+  "161": {
+    "inputs": {
+      "expression": "(a * b) // 16 * 16",
+      "a": [
+        "159",
+        1
+      ],
+      "b": [
+        "162",
+        0
+      ]
+    },
+    "class_type": "MathExpression|pysssss",
+    "_meta": {
+      "title": "Expression Height"
+    }
+  },
+  "162": {
+    "inputs": {
+      "Xi": 0,
+      "Xf": 0.6,
+      "isfloatX": 1
+    },
+    "class_type": "mxSlider",
+    "_meta": {
+      "title": "pourcentage taille"
+    }
+  },
+  "164": {
+    "inputs": {
+      "text": "1152",
+      "anything": [
+        "161",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "Height"
+    }
+  },
+  "166": {
+    "inputs": {
+      "text": "640",
+      "anything": [
+        "160",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "Width"
+    }
+  },
+  "168": {
+    "inputs": {
+      "rmbgmodel": [
+        "169",
+        0
+      ],
+      "image": [
+        "158",
+        0
+      ]
+    },
+    "class_type": "BRIA_RMBG_Zho",
+    "_meta": {
+      "title": "🧹BRIA RMBG"
+    }
+  },
+  "169": {
+    "inputs": {},
+    "class_type": "BRIA_RMBG_ModelLoader_Zho",
+    "_meta": {
+      "title": "🧹BRIA_RMBG Model Loader"
+    }
+  },
+  "172": {
+    "inputs": {
+      "images": [
+        "168",
+        0
+      ]
+    },
+    "class_type": "Images to RGB",
+    "_meta": {
+      "title": "Images to RGB"
+    }
+  },
+  "173": {
+    "inputs": {
+      "ckpt_name": "juggernautXL_v9Rdphoto2Lightning.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Charger Point de Contrôle"
+    }
+  },
+  "176": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": true,
+      "destination": [
+        "206",
+        0
+      ],
+      "source": [
+        "172",
+        0
+      ],
+      "mask": [
+        "270",
+        0
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "ImageCompositeMasked"
+    }
+  },
+  "177": {
+    "inputs": {
+      "width": [
+        "160",
+        0
+      ],
+      "height": [
+        "161",
+        0
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Image Latente Vide"
+    }
+  },
+  "180": {
+    "inputs": {
+      "seed": 29525731598935,
+      "steps": 6,
+      "cfg": 1.8,
+      "sampler_name": "dpmpp_sde",
+      "scheduler": "sgm_uniform",
+      "denoise": 1,
+      "model": [
+        "173",
+        0
+      ],
+      "positive": [
+        "367",
+        0
+      ],
+      "negative": [
+        "215",
+        0
+      ],
+      "latent_image": [
+        "177",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "184": {
+    "inputs": {
+      "value": 2
+    },
+    "class_type": "INTConstant",
+    "_meta": {
+      "title": "INT Constant"
+    }
+  },
+  "186": {
+    "inputs": {
+      "index": [
+        "184",
+        0
+      ],
+      "value1": [
+        "158",
+        0
+      ],
+      "value2": [
+        "172",
+        0
+      ]
+    },
+    "class_type": "easy anythingIndexSwitch",
+    "_meta": {
+      "title": "Any Index Switch"
+    }
+  },
+  "206": {
+    "inputs": {
+      "samples": [
+        "180",
+        0
+      ],
+      "vae": [
+        "173",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "209": {
+    "inputs": {
+      "text": [
+        "147",
+        0
+      ],
+      "delimiter": "STOP",
+      "start_index": 0,
+      "skip_every": 0,
+      "max_count": 1
+    },
+    "class_type": "GeminiTextSplitter",
+    "_meta": {
+      "title": "Splitter FOND"
+    }
+  },
+  "214": {
+    "inputs": {
+      "images": [
+        "371",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Aperçu Image"
+    }
+  },
+  "215": {
+    "inputs": {
+      "text": "bad quality, blurry, cartoon, CGI, render, 3d, painting, drawing, unreal engine, anime, sketch, semi-realistic, signature, watermark, cropped, poorly drawn, out of focus",
+      "clip": [
+        "173",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Prompt Negatif"
+    }
+  },
+  "221": {
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "crop_w": 0,
+      "crop_h": 0,
+      "target_width": 1024,
+      "target_height": 1024,
+      "text_g": [
+        "227",
+        0
+      ],
+      "text_l": [
+        "227",
+        0
+      ],
+      "clip": [
+        "173",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncodeSDXL",
+    "_meta": {
+      "title": "CLIPTextEncodeSDXL"
+    }
+  },
+  "225": {
+    "inputs": {
+      "text": [
+        "377",
+        0
+      ],
+      "clip": [
+        "173",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "227": {
+    "inputs": {
+      "separator": "STOP",
+      "reverse": false,
+      "return_half": "First Half",
+      "text": [
+        "356",
+        0
+      ]
+    },
+    "class_type": "TextSplit",
+    "_meta": {
+      "title": "TextSplit"
+    }
+  },
+  "259": {
+    "inputs": {
+      "width": [
+        "160",
+        0
+      ],
+      "height": [
+        "161",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "keep_proportion": "resize",
+      "pad_color": "0, 0, 0",
+      "crop_position": "center",
+      "divisible_by": 8,
+      "device": "cpu",
+      "image": [
+        "265",
+        0
+      ]
+    },
+    "class_type": "ImageResizeKJv2",
+    "_meta": {
+      "title": "Resize Image v2"
+    }
+  },
+  "265": {
+    "inputs": {
+      "select": [
+        "184",
+        0
+      ],
+      "images1": [
+        "158",
+        0
+      ],
+      "images2_opt": [
+        "371",
+        0
+      ]
+    },
+    "class_type": "ImageMaskSwitch",
+    "_meta": {
+      "title": "Switch (images, mask)"
+    }
+  },
+  "270": {
+    "inputs": {
+      "amount": 10,
+      "device": "auto",
+      "mask": [
+        "284",
+        0
+      ]
+    },
+    "class_type": "MaskBlur+",
+    "_meta": {
+      "title": "🔧 Mask Blur"
+    }
+  },
+  "279": {
+    "inputs": {
+      "value": 61
+    },
+    "class_type": "easy int",
+    "_meta": {
+      "title": "Video Length"
+    }
+  },
+  "284": {
+    "inputs": {
+      "expand": -5,
+      "tapered_corners": false,
+      "mask": [
+        "168",
+        1
+      ]
+    },
+    "class_type": "GrowMask",
+    "_meta": {
+      "title": "GrowMask"
+    }
+  },
+  "285": {
+    "inputs": {
+      "seed": 559281178930141,
+      "steps": 30,
+      "cfg": 8,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.15,
+      "model": [
+        "299",
+        0
+      ],
+      "positive": [
+        "302",
+        0
+      ],
+      "negative": [
+        "303",
+        0
+      ],
+      "latent_image": [
+        "293",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "287": {
+    "inputs": {
+      "samples": [
+        "285",
+        0
+      ],
+      "vae": [
+        "299",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "293": {
+    "inputs": {
+      "pixels": [
+        "309",
+        0
+      ],
+      "vae": [
+        "299",
+        2
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "299": {
+    "inputs": {
+      "ckpt_name": "realisticVisionV60B1_v51HyperVAE.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Charger Point de Contrôle"
+    }
+  },
+  "302": {
+    "inputs": {
+      "text": [
+        "324",
+        0
+      ],
+      "clip": [
+        "299",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "303": {
+    "inputs": {
+      "text": "cartoon, drawing, anime, low quality, distorted, extra fingers, mutated hands, deformed limbs, distorted arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck, gross proportions, malformed limbs, missing arms, mutated body, out of frame, duplicate, multiple people",
+      "clip": [
+        "299",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "306": {
+    "inputs": {
+      "images": [
+        "206",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Aperçu Image"
+    }
+  },
+  "308": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "206",
+        0
+      ],
+      "source": [
+        "176",
+        0
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "ImageCompositeMasked"
+    }
+  },
+  "309": {
+    "inputs": {
+      "images": [
+        "308",
+        0
+      ]
+    },
+    "class_type": "Images to RGB",
+    "_meta": {
+      "title": "Images to RGB"
+    }
+  },
+  "310": {
+    "inputs": {
+      "text_0": "simple_background, no_humans, black_background, clock, gears, pocket_watch, still_life, roman_numeral",
+      "text": [
+        "339",
+        0
+      ]
+    },
+    "class_type": "ShowText|pysssss",
+    "_meta": {
+      "title": "Show Text 🐍"
+    }
+  },
+  "319": {
+    "inputs": {
+      "text_0": "(photograph of :1.2) , hyperealistic skin, subsurface scattering, extremely detailed, cinematic lighting, realistic sunlight, sharp focus, high resolution, realistic skin, reflections on the glass, caustics, 8k",
+      "text": [
+        "324",
+        0
+      ]
+    },
+    "class_type": "ShowText|pysssss",
+    "_meta": {
+      "title": "Show Text 🐍"
+    }
+  },
+  "320": {
+    "inputs": {
+      "string": "",
+      "regex_pattern": "(^The image shows\\s+)|(\\.(?:\\s+In the background|\\s+The background|\\s+The backdrop|\\s+The sky).*$)|(\\s+and the sky is.*$)",
+      "replace": "",
+      "case_insensitive": true,
+      "multiline": false,
+      "dotall": false,
+      "count": 0
+    },
+    "class_type": "RegexReplace",
+    "_meta": {
+      "title": "Remplacer par Regex"
+    }
+  },
+  "324": {
+    "inputs": {
+      "delimiter": " ",
+      "clean_whitespace": "true",
+      "text_a": [
+        "325",
+        0
+      ],
+      "text_b": [
+        "320",
+        0
+      ],
+      "text_c": [
+        "326",
+        0
+      ],
+      "text_d": [
+        "330",
+        0
+      ]
+    },
+    "class_type": "Text Concatenate",
+    "_meta": {
+      "title": "Text Concatenate"
+    }
+  },
+  "325": {
+    "inputs": {
+      "value": "(photograph of "
+    },
+    "class_type": "PrimitiveString",
+    "_meta": {
+      "title": "Chaîne"
+    }
+  },
+  "326": {
+    "inputs": {
+      "value": ":1.2)"
+    },
+    "class_type": "PrimitiveString",
+    "_meta": {
+      "title": "Chaîne"
+    }
+  },
+  "330": {
+    "inputs": {
+      "text": ", hyperealistic skin, subsurface scattering, extremely detailed, cinematic lighting, realistic sunlight, sharp focus, high resolution, realistic skin, reflections on the glass, caustics, 8k"
+    },
+    "class_type": "Text Multiline",
+    "_meta": {
+      "title": "Text Multiline"
+    }
+  },
+  "339": {
+    "inputs": {
+      "model": "wd-v1-4-moat-tagger-v2",
+      "threshold": 0.35,
+      "character_threshold": 0.85,
+      "replace_underscore": false,
+      "trailing_comma": false,
+      "exclude_tags": "",
+      "tags": "simple_background, no_humans, black_background, clock, gears, pocket_watch, still_life, roman_numeral",
+      "image": [
+        "186",
+        0
+      ]
+    },
+    "class_type": "WD14Tagger|pysssss",
+    "_meta": {
+      "title": "WD14 Tagger 🐍"
+    }
+  },
+  "345": {
+    "inputs": {
+      "index": [
+        "184",
+        0
+      ],
+      "value1": [
+        "348",
+        0
+      ],
+      "value2": [
+        "149",
+        0
+      ]
+    },
+    "class_type": "easy anythingIndexSwitch",
+    "_meta": {
+      "title": "Any Index Switch"
+    }
+  },
+  "348": {
+    "inputs": {
+      "Text": "IMPORTANT: Even if the user prompt is in French, your output must be exclusively in English. You must act as a translator and enhancer.\n\nRole: Expert cinematic prompt engineer for WanVideo and Image Generation. Context: You will receive a raw list of tags describing a person and their accessories (from a WD14 Tagger). You must filter out any suggestive or anatomical tags and focus on the professional aesthetic.\n\nTask: Translate and transform the user's request into two distinct technical prompts separated ONLY by the word: STOP.\n\nDecision Logic: Lighting Sync: Analyze the tags. You MUST describe the environment to match the subject's lighting. IF ANIMAL: Describe natural lifelike movements. IF PERSON: Add \"living\" details (eye blinking, subtle head tilt, slight smile). IF ARCHITECTURE: Force physical camera displacement (Dolly-in, Orbit, or Pan).\n\nSTRICT NEGATIVE CONSTRAINTS: In the first paragraph: NEVER mention any person, character, body part, or human presence. It must be a 100% empty environment. Focus strictly on the original environment, textures, and existing lighting described in the tags.\n\nIn the second paragraph: Focus strictly on the subject and the camera movement.\n\nOUTPUT FORMAT (Mandatory): Write one paragraph describing ONLY the static environment. Then write the word STOP on a new line. Then write one paragraph starting directly with the camera movement and describing the character's subtle actions. DO NOT use brackets, DO NOT use bold stars, DO NOT use titles.\nOutput structure: [PROMPT1]STOP[PROMPT2]. No spaces, no new lines around STOP\n"
+    },
+    "class_type": "DF_Text_Box",
+    "_meta": {
+      "title": "Formatage Prompt Mode 1"
+    }
+  },
+  "349": {
+    "inputs": {
+      "text": [
+        "147",
+        0
+      ],
+      "delimiter": "STOP",
+      "start_index": 1,
+      "skip_every": 0,
+      "max_count": 10
+    },
+    "class_type": "GeminiTextSplitter",
+    "_meta": {
+      "title": "Splitter SUJET"
+    }
+  },
+  "356": {
+    "inputs": {
+      "index": [
+        "184",
+        0
+      ],
+      "value0": [
+        "349",
+        0
+      ],
+      "value1": [
+        "349",
+        0
+      ],
+      "value2": [
+        "209",
+        0
+      ]
+    },
+    "class_type": "easy anythingIndexSwitch",
+    "_meta": {
+      "title": "Any Index Switch"
+    }
+  },
+  "367": {
+    "inputs": {
+      "index": [
+        "184",
+        0
+      ],
+      "value1": [
+        "381",
+        0
+      ],
+      "value2": [
+        "225",
+        0
+      ]
+    },
+    "class_type": "easy anythingIndexSwitch",
+    "_meta": {
+      "title": "Switch_Prompt_Bypass"
+    }
+  },
+  "371": {
+    "inputs": {
+      "index": [
+        "184",
+        0
+      ],
+      "value1": [
+        "158",
+        0
+      ],
+      "value2": [
+        "287",
+        0
+      ]
+    },
+    "class_type": "easy anythingIndexSwitch",
+    "_meta": {
+      "title": "Switch_Prompt_Bypass"
+    }
+  },
+  "374": {
+    "inputs": {
+      "prompt": "Act as a lighting expert for 3D rendering. Analyze the lighting from the perspective of the camera. Output ONLY: 1. Light direction (left or right of the frame) 2. Light angle (high or low) 3. Color temperature. Note: If the right side of the person's face is brighter, light is from the RIGHT. Format: 'Light from [direction], [angle] angle, [temperature] No other words.",
+      "gemini_model": "gemini-3-flash-preview",
+      "stream": false,
+      "structure_output": false,
+      "prompt_structure": "Custom",
+      "structure_format": "string",
+      "output_format": "raw_text",
+      "api_key": "AIzaSyAeyRX4jdOW_x438VtH6iK4OCvQE9dDsqA",
+      "image1": [
+        "158",
+        0
+      ]
+    },
+    "class_type": "GeminiAPI",
+    "_meta": {
+      "title": "Gemini API"
+    }
+  },
+  "377": {
+    "inputs": {
+      "delimiter": " ",
+      "clean_whitespace": "true",
+      "text_a": [
+        "209",
+        0
+      ],
+      "text_b": [
+        "374",
+        0
+      ]
+    },
+    "class_type": "Text Concatenate",
+    "_meta": {
+      "title": "Text Concatenate"
+    }
+  },
+  "381": {
+    "inputs": {
+      "In": [
+        "225",
+        0
+      ]
+    },
+    "class_type": "mxStop",
+    "_meta": {
+      "title": "Stop"
+    }
+  },
+  "384": {
+    "inputs": {
+      "text_0": "A luxurious modern restaurant interior featuring a centerpiece of a polished dark wood table. The space is defined by high-end materials including smooth white marble accents and transparent glass partitions. Warm, ambient lighting from hidden sources creates a soft, golden glow that reflects off the surfaces, ensuring a serene and empty environment with no human presence.",
+      "text": [
+        "356",
+        0
+      ]
+    },
+    "class_type": "ShowText|pysssss",
+    "_meta": {
+      "title": "Show Text 🐍"
+    }
+  },
+  "385": {
+    "inputs": {
+      "index": [
+        "184",
+        0
+      ],
+      "value1": [
+        "356",
+        0
+      ],
+      "value2": [
+        "388",
+        0
+      ]
+    },
+    "class_type": "easy anythingIndexSwitch",
+    "_meta": {
+      "title": "Any Index Switch"
+    }
+  },
+  "388": {
+    "inputs": {
+      "Prepend": [
+        "356",
+        0
+      ],
+      "Append": [
+        "349",
+        0
+      ],
+      "Delimiter": " "
+    },
+    "class_type": "DF_String_Concatenate",
+    "_meta": {
+      "title": "String Concatenate"
+    }
+  }
+}

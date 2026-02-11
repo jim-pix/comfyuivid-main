@@ -2,18 +2,18 @@ FROM runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel
 
 WORKDIR /app
 
-# Installation des dépendances système + outils de debug
+# Installation des dépendances système
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    git wget ffmpeg libgl1 libglib2.0-0 \
-    htop curl \
+    git wget ffmpeg libgl1 libglib2.0-0 curl \
     && rm -rf /var/lib/apt/lists/*
 
-# UPGRADE PyTorch vers 2.2.x (compatible avec numpy<2 ET torch.uint64)
+# UPGRADE PyTorch vers 2.4.x
 RUN pip install --no-cache-dir \
-    torch==2.2.2 \
-    torchvision==0.17.2 \
-    torchaudio==2.2.2 \
+    'numpy>=2.0,<2.3' \
+    torch==2.4.0 \
+    torchvision==0.19.0 \
+    torchaudio==2.4.0 \
     --index-url https://download.pytorch.org/whl/cu118
 
 # Cloner ComfyUI
@@ -21,25 +21,71 @@ RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /comfyui
 
 WORKDIR /comfyui
 
-# Modifier requirements.txt pour forcer numpy<2
-RUN sed -i 's/numpy.*/numpy<2/' requirements.txt || echo "numpy<2" >> requirements.txt
-
-# Installer les requirements modifiés + RunPod + bibliothèques utiles
+# Installer les requirements
 RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir \
-    runpod \
-    websocket-client \
-    requests \
-    boto3 \
-    && pip check || echo "Warning: dependency conflicts detected"
+    pip install --no-cache-dir runpod websocket-client requests boto3
 
 # Créer extra_model_paths.yaml
-RUN printf 'comfyui:\n  base_path: /workspace/\n  checkpoints: models/checkpoints/\n  unet: models/unet/\n  vae: models/vae/\n  loras: models/loras/\n  clip: models/clip/\n  upscale_models: models/upscale_models/\n  diffusers: models/diffusers/\n' > extra_model_paths.yaml
+RUN echo 'comfyui:' > extra_model_paths.yaml && \
+    echo '  base_path: /workspace/' >> extra_model_paths.yaml && \
+    echo '  checkpoints: models/checkpoints/' >> extra_model_paths.yaml && \
+    echo '  unet: models/unet/' >> extra_model_paths.yaml && \
+    echo '  vae: models/vae/' >> extra_model_paths.yaml && \
+    echo '  loras: models/loras/' >> extra_model_paths.yaml && \
+    echo '  clip: models/clip/' >> extra_model_paths.yaml && \
+    echo '  upscale_models: models/upscale_models/' >> extra_model_paths.yaml
 
-# Créer start.sh amélioré avec plus de checks
-RUN printf '#!/bin/bash\nset -e\n\necho "=== ComfyUI Serverless Worker ==="\necho "PyTorch version: $(python -c \"import torch; print(torch.__version__)\")"\necho "NumPy version: $(python -c \"import numpy; print(numpy.__version__)\")"\n\n# Vérifier le Network Volume\necho "Checking Network Volume..."\nif [ ! -d "/workspace/models" ]; then\n  echo "ERROR: Network Volume not mounted at /workspace"\n  exit 1\nfi\necho "✅ Volume detected: /workspace"\n\n# Vérifier que les modèles existent\necho "Checking for models..."\nif [ -d "/workspace/models/unet" ]; then\n  echo "✅ Found unet models:"\n  ls -lh /workspace/models/unet/ | head -5\nelse\n  echo "⚠️  No unet models found"\nfi\n\n# Setup custom nodes\nif [ -d "/workspace/custom_nodes" ]; then\n  echo "Setting up custom nodes..."\n  rm -rf /comfyui/custom_nodes\n  ln -s /workspace/custom_nodes /comfyui/custom_nodes\n  \n  echo "Installing custom node dependencies..."\n  for node_dir in /workspace/custom_nodes/*/; do\n    if [ -f "${node_dir}requirements.txt" ]; then\n      node_name=$(basename "$node_dir")\n      echo "  → Installing for $node_name"\n      pip install -q -r "${node_dir}requirements.txt" || echo "    ⚠️  Failed for $node_name"\n    fi\n  done\n  echo "✅ Custom nodes setup complete"\nelse\n  echo "⚠️  No custom_nodes directory found"\nfi\n\n# Démarrer ComfyUI\necho ""\necho "========================================"\necho "Starting ComfyUI..."\necho "========================================"\npython -u /comfyui/main.py --disable-auto-launch --disable-metadata &\n\n# Attendre que ComfyUI soit prêt\nsleep 15\n\n# Vérifier que ComfyUI répond\necho "Checking if ComfyUI is ready..."\nfor i in {1..10}; do\n  if curl -s http://localhost:8188 > /dev/null 2>&1; then\n    echo "✅ ComfyUI is responding"\n    break\n  fi\n  echo "Waiting for ComfyUI... ($i/10)"\n  sleep 2\ndone\n\necho ""\necho "========================================"\necho "Starting RunPod Handler..."\necho "========================================"\npython -u /handler.py\n' > start.sh && chmod +x start.sh
+# Créer start.sh avec symlink
+RUN echo '#!/bin/bash' > start.sh && \
+    echo 'set -e' >> start.sh && \
+    echo '' >> start.sh && \
+    echo '# Créer symlink si le volume est à /runpod-volume' >> start.sh && \
+    echo 'if [ -d "/runpod-volume" ] && [ ! -L "/workspace" ]; then' >> start.sh && \
+    echo '  echo "Detected volume at /runpod-volume"' >> start.sh && \
+    echo '  rm -rf /workspace' >> start.sh && \
+    echo '  ln -s /runpod-volume /workspace' >> start.sh && \
+    echo '  echo "✅ Created symlink: /workspace -> /runpod-volume"' >> start.sh && \
+    echo 'fi' >> start.sh && \
+    echo '' >> start.sh && \
+    echo 'echo "=== ComfyUI Serverless Worker ==="' >> start.sh && \
+    echo 'python -c "import torch; print(\"PyTorch:\", torch.__version__)"' >> start.sh && \
+    echo 'python -c "import numpy; print(\"NumPy:\", numpy.__version__)"' >> start.sh && \
+    echo '' >> start.sh && \
+    echo 'echo "Checking Network Volume..."' >> start.sh && \
+    echo 'if [ ! -d "/workspace/models" ]; then' >> start.sh && \
+    echo '  echo "❌ ERROR: Volume not found at /workspace/models"' >> start.sh && \
+    echo '  exit 1' >> start.sh && \
+    echo 'fi' >> start.sh && \
+    echo 'echo "✅ Volume detected: /workspace"' >> start.sh && \
+    echo '' >> start.sh && \
+    echo 'if [ -d "/workspace/models/unet" ]; then' >> start.sh && \
+    echo '  echo "✅ Found models:"' >> start.sh && \
+    echo '  ls -lh /workspace/models/unet/ | head -3' >> start.sh && \
+    echo 'fi' >> start.sh && \
+    echo '' >> start.sh && \
+    echo 'if [ -d "/workspace/custom_nodes" ]; then' >> start.sh && \
+    echo '  echo "Setting up custom nodes..."' >> start.sh && \
+    echo '  rm -rf /comfyui/custom_nodes' >> start.sh && \
+    echo '  ln -s /workspace/custom_nodes /comfyui/custom_nodes' >> start.sh && \
+    echo '  for node_dir in /workspace/custom_nodes/*/; do' >> start.sh && \
+    echo '    if [ -f "${node_dir}requirements.txt" ]; then' >> start.sh && \
+    echo '      echo "  → Installing $(basename $node_dir)"' >> start.sh && \
+    echo '      pip install -q -r "${node_dir}requirements.txt" || true' >> start.sh && \
+    echo '    fi' >> start.sh && \
+    echo '  done' >> start.sh && \
+    echo 'fi' >> start.sh && \
+    echo '' >> start.sh && \
+    echo 'echo ""' >> start.sh && \
+    echo 'echo "Starting ComfyUI..."' >> start.sh && \
+    echo 'python -u /comfyui/main.py --disable-auto-launch --disable-metadata &' >> start.sh && \
+    echo 'sleep 15' >> start.sh && \
+    echo '' >> start.sh && \
+    echo 'echo "Starting RunPod Handler..."' >> start.sh && \
+    echo 'python -u /handler.py' >> start.sh && \
+    chmod +x start.sh
 
-# Handler amélioré avec WebSocket pour suivre la progression
-RUN printf 'import runpod\nimport requests\nimport json\nimport time\n\nCOMFYUI_URL = "http://localhost:8188"\n\ndef get_history(prompt_id):\n    """Récupérer l historique d une génération"""\n    try:\n        response = requests.get(f"{COMFYUI_URL}/history/{prompt_id}")\n        return response.json()\n    except:\n        return {}\n\ndef wait_for_completion(prompt_id, timeout=600):\n    """Attendre que la génération soit terminée"""\n    start_time = time.time()\n    \n    while time.time() - start_time < timeout:\n        history = get_history(prompt_id)\n        \n        if prompt_id in history:\n            prompt_history = history[prompt_id]\n            \n            # Vérifier si terminé\n            if "outputs" in prompt_history:\n                print(f"✅ Generation completed for {prompt_id}")\n                return prompt_history["outputs"]\n        \n        print(f"⏳ Waiting for generation... ({int(time.time() - start_time)}s)")\n        time.sleep(2)\n    \n    raise TimeoutError(f"Generation timed out after {timeout}s")\n\ndef handler(job):\n    """Handler RunPod pour traiter les jobs"""\n    print(f"📥 Job received: {job.get(\\"id\\")}")\n    \n    job_input = job.get("input", {})\n    workflow = job_input.get("workflow")\n    \n    if not workflow:\n        return {"error": "No workflow provided"}\n    \n    try:\n        # Envoyer le workflow à ComfyUI\n        print("📤 Sending workflow to ComfyUI...")\n        response = requests.post(\n            f"{COMFYUI_URL}/prompt",\n            json={"prompt": workflow},\n            timeout=30\n        )\n        \n        if response.status_code != 200:\n            return {"error": f"ComfyUI error: {response.text}"}\n        \n        result = response.json()\n        prompt_id = result.get("prompt_id")\n        \n        print(f"✅ Prompt queued with ID: {prompt_id}")\n        \n        # Attendre la complétion\n        timeout = job_input.get("timeout", 600)\n        outputs = wait_for_completion(prompt_id, timeout=timeout)\n        \n        return {\n            "status": "success",\n            "prompt_id": prompt_id,\n            "outputs": outputs,\n            "message": "Video generation completed"\n        }\n        \n    except TimeoutError as e:\n        return {"error": str(e), "status": "timeout"}\n    except Exception as e:\n        print(f"❌ Error: {str(e)}")\n        return {"error": str(e), "status": "failed"}\n\nif __name__ == "__main__":\n    print("="*50)\n    print("🚀 Starting RunPod Handler")\n    print("="*50)\n    runpod.serverless.start({"handler": handler})\n' > /handler.py
+# Copier les fichiers depuis votre dossier local
+COPY handler.py /handler.py
+COPY workflow_template.json /workflow_template.json
 
 CMD ["./start.sh"]
